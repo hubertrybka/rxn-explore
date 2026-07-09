@@ -19,7 +19,6 @@ if 'data_dir' not in st.session_state:
     st.session_state['data_dir'].mkdir(parents=True, exist_ok=True)
     st.session_state['user_report_dir'].mkdir(parents=True, exist_ok=True)
 
-logo_col1, logo_col2 = st.columns([2, 1])
 st.image('data/imgs/header_logo.png', width=800)
 
 # Display info about the loaded dataset
