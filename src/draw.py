@@ -8,11 +8,16 @@ from io import BytesIO
 from typing import Tuple
 
 @st.cache_data(show_spinner=False)
-def draw_mol_from_smiles(smiles: str, size: Tuple[int, int] = (400, 350)) -> Image.Image:
+def draw_mol_from_smiles(smiles: str, size: Tuple[int, int] = (600, 600)) -> Image.Image:
     mol = Chem.MolFromSmiles(smiles)
     rdDepictor.Compute2DCoords(mol)
     rdDepictor.StraightenDepiction(mol)
+
     d2d = Draw.MolDraw2DCairo(size[0],size[1])
+    opts = d2d.drawOptions()
+    opts.bondLineWidth = 4  # make bonds thicker
+    opts.clearBackground = True
+
     d2d.DrawMolecule(mol)
     d2d.FinishDrawing()
     bio = BytesIO(d2d.GetDrawingText())
@@ -22,12 +27,11 @@ def draw_mol_from_smiles(smiles: str, size: Tuple[int, int] = (400, 350)) -> Ima
     Chem.Mol: lambda mol: Chem.MolToSmiles(mol) if mol is not None else "",
     rdChemReactions.ChemicalReaction: rdChemReactions.ReactionToSmarts,
 })
-def draw_highlighted_reaction(rxn, reacts, prods,
-                            includeAtomMaps=True, highlightAllAtoms=True,
+def draw_highlighted_reaction(reacts, prods,
+                            includeAtomMaps=False, highlightAllAtoms=True,
                             mapAllAtoms=False,
                             highlightColors=None,
-                            size=(900,200), annotationFontScale=0.74,
-                            drawOptions=None):
+                            size=(1200,400), annotationFontScale=0.74) -> Image.Image:
     '''
     Adapted from Greg Landrum (2025)
     draws a specific reaction with the reactants and products highlighted
@@ -76,10 +80,10 @@ def draw_highlighted_reaction(rxn, reacts, prods,
 
     # and draw it
     d2d = Draw.MolDraw2DCairo(size[0],size[1])
-    if drawOptions is not None:
-        d2d.SetDrawOptions(drawOptions)
-    else:
-        d2d.drawOptions().annotationFontScale=annotationFontScale
+    opts = d2d.drawOptions()
+    opts.annotationFontScale=0
+    opts.bondLineWidth = 2
+    opts.clearBackground = True
     d2d.DrawReaction(nrxn, highlightByReactant=True, highlightColorsReactants=highlightColors)
     d2d.FinishDrawing()
     bio = BytesIO(d2d.GetDrawingText())

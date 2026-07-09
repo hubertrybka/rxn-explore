@@ -17,23 +17,32 @@ def prepare_df():
         row = {"Index": i,
                "SMILES": molecule.get_smiles(),
                "Structure": image_to_data_url(molecule.render_molecule()),
-               "Info": ''
+               "Info": '',
+               "Pathway": ":material/visibility:"
                }
         rows.append(row)
     df = pd.DataFrame(rows)
     return df
 
-st.title("Favourites")
+st.header("Favourites")
 
-if st.session_state['favourite_idcs'] is not None:
+if st.session_state['favourite_idcs']:
+
     df = prepare_df()
     st.dataframe(df, use_container_width=True, column_config={
-        "Index": st.column_config.NumberColumn("Index", help="Index of the molecule in the dataset"),
-        "SMILES": st.column_config.TextColumn("SMILES", help="SMILES representation of the molecule", width='small'),
-        "Structure": st.column_config.ImageColumn("Structure", help="Rendered structure of the molecule",
-                                                  width='medium'),
-        "Info": st.column_config.TextColumn("Info", help="Additional info")}, row_height=150)
+        "Index": st.column_config.NumberColumn("Index", width='small', alignment='center'),
+        "SMILES": st.column_config.TextColumn("SMILES", width='small'),
+        "Structure": st.column_config.ImageColumn("Structure", width='medium'),
+        "Info": st.column_config.TextColumn("Info"),
+        "Pathway": st.column_config.ButtonColumn("View in Browser",
+                                                         key='fav_clicked', width='small', type="tertiary")
+        }, row_height=150)
+
+    if st.session_state['fav_clicked']:
+        idx = st.session_state['fav_clicked']['row']
+        st.session_state['view_index'] = df.iloc[idx]['Index']
+        st.switch_page("molecules_page.py")
 
 else:
-    st.warning("No compounds added to favourites yet")
+    st.warning("No molecules added to favourites yet")
 

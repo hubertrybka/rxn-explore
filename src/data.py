@@ -1,5 +1,4 @@
 from rdkit.Chem import AllChem
-from rdkit import Chem
 from src.draw import draw_highlighted_reaction, draw_mol_from_smiles
 import ast
 import datetime
@@ -8,6 +7,7 @@ import pathlib
 from rdkit.Chem import Mol
 import pandas as pd
 from typing import Any
+from rdkit import Chem
 
 class Step:
     def __init__(self, reaction: str, reactants: Mol | Tuple[Mol, Mol], product: Mol):
@@ -26,15 +26,22 @@ class Step:
         return self.rxn.RunReactants(self.reactants)[0]
 
     def render_diagram(self):
-        return draw_highlighted_reaction(self.rxn, self.reactants, self.get_product())
+        return draw_highlighted_reaction(self.reactants, self.get_product())
 
 class MoleculeData:
     def __init__(self, df):
         self.df = df
+
+        self.smiles_col_name = 'molecule'
+        self.synthesis_col_name = 'path'
+
         self.pathway = self._make_pathway()
 
     def get_smiles(self):
-        return self.df['molecule']
+        return self.df[self.smiles_col_name]
+
+    def get_mol(self):
+        return Chem.MolFromSmiles(self.get_smiles())
 
     def get_step(self, index):
         if index < 0 or index >= len(self.pathway):
@@ -46,7 +53,7 @@ class MoleculeData:
         return len(self.pathway)
 
     def _make_pathway(self) -> List[Step]:
-        path_string = self.df['path']
+        path_string = self.df[self.synthesis_col_name]
         path_list = ast.literal_eval(path_string)
         no_steps = int((len(path_list)-1)/2)
         steps = []
