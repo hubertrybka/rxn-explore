@@ -10,6 +10,7 @@ if 'data_dir' not in st.session_state:
     st.session_state['data_dir'] = pathlib.Path().cwd() / 'data' / 'library'
     st.session_state['user_report_dir'] = pathlib.Path().cwd() / 'data' / 'user_reports'
     st.session_state['favourite_idcs'] = []
+    st.session_state['bugged_idcs'] = []
     st.session_state['view_index'] = 0
     st.set_page_config(page_title="rxn-explore",
                        page_icon=":heart_decoration:",
@@ -18,7 +19,8 @@ if 'data_dir' not in st.session_state:
     st.session_state['data_dir'].mkdir(parents=True, exist_ok=True)
     st.session_state['user_report_dir'].mkdir(parents=True, exist_ok=True)
 
-st.image('data/imgs/header_logo.png', width='stretch')
+logo_col1, logo_col2 = st.columns([2, 1])
+st.image('data/imgs/header_logo.png', width=800)
 
 # Display info about the loaded dataset
 if st.session_state['dataset'] is not None:
@@ -28,7 +30,7 @@ if st.session_state['dataset'] is not None:
 with st.sidebar:
     cont_lib = st.container(border=True, width='stretch')
     with cont_lib:
-        st.subheader("Recently added to library 📚")
+        st.subheader("📚 Recently added to library:")
         library_files = sorted(
             st.session_state['data_dir'].glob('*.pkl'),
             key=lambda p: p.stat().st_mtime,
@@ -52,3 +54,5 @@ pg = st.navigation([
 ], position="sidebar")
 
 pg.run()
+
+st.caption("2026 Hubert Rybka • for the fearless synthetic chemists of IPPAS • never surrender")

@@ -54,15 +54,16 @@ if st.session_state['dataset'] is not None:
             cont_error_pathway = st.container(border=True)
             with cont_error_pathway:
                 st.write(f"**Pathway could not be rendered.** Let me know by sending a report:")
-                if st.button("Report", type="primary", disabled=st.session_state['is_bugged'][index]):
+                if st.button("Report", type="primary", disabled=index in st.session_state['bugged_idcs']):
                     timestamp = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
                     molecule_raw = dataset.raw_data.iloc[index]
                     filename = f"bug_report_{timestamp}.txt"
                     with open(st.session_state['user_report_dir'] / filename, 'a') as f:
-                        f.write(f"# Exception: {e}\n\n")
+                        comment = str(e).replace('\n', '\n#')
+                        f.write(f"# Exception: {comment}\n\n")
                         yaml = yaml.dump(molecule_raw.to_dict(), default_flow_style=False, width=50, indent=4)
                         f.write(yaml)
-                    st.session_state['is_bugged'][index] = True
+                    st.session_state['bugged_idcs'].append(index)
                     st.rerun()
 else:
     st.warning("Load a dataset to browse this page")
