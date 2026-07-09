@@ -23,7 +23,7 @@ st.header("Load Data")
 
 with st.expander("**How to use rxn-explore**", icon="📋"):
     st.markdown("""
-    This app serves as an interface to the outputs of the GenProSyn GFlowNet.
+    This app serves as an interface between a chemist and the output files of the GenProSyn GFlowNet.
     It allows you to browse the generated molecules, visualize their structures and preview synthesis pathways.
     
     ### How to use:
