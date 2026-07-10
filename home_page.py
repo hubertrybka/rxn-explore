@@ -32,8 +32,8 @@ with st.expander("How to use **rxn-explore** server?", expanded=True, icon="❓"
     st.info(
         "If the upload is successful, you will notice the **Session status** message change to *Dataset loaded*, "
         "displaying the name and size of the uploaded data. Session status message box will also change background "
-        "color from blue to green to signal this fact.. Session status box is located on the top of the sidebar, "
-        "just below the navigation menu.",
+        "color from blue to green to signal this fact. **Session status box is located on the top of the sidebar, "
+        "just below the navigation menu.**",
         icon="ℹ️",
     )
 
