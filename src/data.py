@@ -93,6 +93,6 @@ class MoleculeDataset:
         save_path = self.data_dir / (filename + ".pkl")
         if save_path.exists():
             raise Exception(
-                f"File {filename} already exists in library. Choose a different name."
+                f"File `{filename}` already exists in library. Choose a different name."
             )
         self.raw_data.to_pickle(save_path)

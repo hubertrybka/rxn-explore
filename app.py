@@ -1,6 +1,7 @@
 import datetime
 import pathlib
 
+from src.utils import sort_library
 import streamlit as st
 
 
@@ -19,18 +20,6 @@ def init_session_state():
     st.session_state["data_dir"].mkdir(parents=True, exist_ok=True)
     st.session_state["user_report_dir"].mkdir(parents=True, exist_ok=True)
     st.session_state["lib_max_entries"] = 100
-
-
-def sort_library(files: list[pathlib.Path]) -> list[pathlib.Path]:
-    strategy = st.session_state.get("lib_sort_by", "date (newest)")
-    if strategy == "name (A→Z)":
-        return sorted(files, key=lambda x: x.stem)
-    elif strategy == "name (Z→A)":
-        return sorted(files, key=lambda x: x.stem, reverse=True)
-    elif strategy == "date (newest)":
-        return sorted(files, key=lambda x: x.stat().st_mtime, reverse=True)
-    elif strategy == "date (oldest)":
-        return sorted(files, key=lambda x: x.stat().st_mtime)
 
 
 def display_library_contents() -> bool:
@@ -97,9 +86,8 @@ with col_logo:
 # Display a list of datasets saved locally
 with st.sidebar:
     # Display info about the loaded dataset
-    c_data = st.container(border=True, width="stretch", horizontal_alignment="center")
+    c_data = st.container(border=False, width="stretch", horizontal_alignment="center")
     with c_data:
-        st.caption("**Session status**", text_alignment="center")
         if st.session_state["dataset"] is not None:
             st.success(
                 f"**Dataset loaded** | {st.session_state['dataset_name']}\
@@ -108,7 +96,7 @@ with st.sidebar:
             )
         else:
             st.info(
-                """**Dataset not loaded**. Navigate to "Load Data" page and select a data file to start""",
+                """**Dataset not loaded**. Navigate to _Load Data_ page and select a data file to start""",
                 icon="⚠️",
             )
     display_library_contents()
@@ -117,7 +105,6 @@ with st.sidebar:
 # Define the navigation menu
 pg = st.navigation(
     [
-        st.Page("home_page.py", title="User Guide", icon="📖"),
         st.Page("data_page.py", title="Load Data", icon="💾"),
         st.Page("molecules_page.py", title="Browse Molecules", icon="👁"),
         st.Page("favourites_page.py", title="Favourites", icon="⭐"),

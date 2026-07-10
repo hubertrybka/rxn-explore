@@ -2,6 +2,7 @@ import streamlit as st
 
 from src.data import MoleculeDataset
 from src.utils import list_library
+from src.streamlit import render_user_guide
 
 
 @st.cache_resource(show_spinner=False)
@@ -94,16 +95,25 @@ def save_dataset():
         try:
             st.session_state["dataset"].save(filename)
             list_library.clear()
-            st.success(f"{filename} added to library")
+            st.rerun()
         except Exception as e:
             st.error(e, icon="❌")
 
 
 # ========================================================================#
 
+st.header("Welcome to rxn-explore server!", text_alignment="center")
+st.markdown(
+    "Before you use this app for the first time - quickly go through with the **user guide** below",
+    text_alignment="center",
+)
+
+render_user_guide()
+st.space(size="small")
+
 st.header("Load Data", text_alignment="center")
 st.markdown(
-    "Upload new .csv data file or load existing one from server storage",
+    "Upload new `.csv` data file or load existing one from server storage",
     text_alignment="center",
 )
 
