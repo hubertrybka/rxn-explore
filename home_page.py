@@ -1,0 +1,68 @@
+import streamlit as st
+
+st.header("Welcome to **rxn-explore** server!", text_alignment="center")
+st.caption(
+    "Before using the app for the first time, please go through the **user guide** below",
+    text_alignment="center",
+)
+st.divider()
+
+with st.expander("How to use **rxn-explore** server?", expanded=True, icon="❓"):
+    st.markdown(
+        """
+    This app allows you to easily browse and analyze the **molecules** and **synthetical pathways** produced by the
+    generative model of GenProSyn. It serves as an interface between the model and organic chemists.
+
+    ### Usage:
+
+    1. The app functionalities are divided into separate pages, accessed through a navigation menu, 
+    which is located on the top of the sidebar (left). There are five pages in total:
+    
+        - *Home* 
+        - *Load Data*
+        - *Browse Molecules*
+        - *Favourites*
+        - *Info* 
+    
+    Our first task is to upload the desired `.csv` file to server. **Navigate to *Load Data* page first.** 
+    Select a `.csv` file from your local storage and upload it to the server by clicking the _Upload data_ button."""
+    )
+
+    st.info(
+        "If the upload is successful, you will notice the **Session status** message change to *Dataset loaded*, "
+        "displaying the name and size of the uploaded data. Session status message box will also change background "
+        "color from blue to green to signal this fact.. Session status box is located on the top of the sidebar, "
+        "just below the navigation menu.",
+        icon="ℹ️",
+    )
+
+    st.markdown("""
+    Files uploaded to the server should contain at least two columns: `molecule` and `path`.
+    Size of the input files must not exceed 100MB. Widget located at the bottom of *Load Data* allows you to save 
+    the uploaded file to to library (which is the server storage), making the data easy to access in future sessions. 
+    The maximum number of datasets stored in library is 100.""")
+
+    st.info(
+        "The only type of data which is retained on server between sessions and can be accessed in future sessions "
+        "is the **datasets** which has been added add to **library** 📚.",
+        icon="ℹ️",
+    )
+
+    st.markdown("""
+    2. **Navigate to _Browse Molecules_ page** to visualize molecules present in the dataset. Each molecule is displayed
+    together with its synthetical pathway and some supporting descriptors. The molecules of the data file are accessed 
+    by their index (position in the dataset) - the indexes start from 0. You can either advance through the dataset
+    by increasing/decreasing molecule index with two arrow buttons of the widget, or input the desired index with
+    your keyboard. Promising molecules can be marked as _favourite_ by clicking the button with a star icon. 
+    This will allow you to easily come back to them later.
+
+    3. **Navigate to _Favourites_ page** to view the molecules you have marked as favourite as a summary in table format.
+    Clicking the eye icon in a row corresponding to chosen molecule moves you to the corresponding _Browse Molecules_ page, 
+    where the synthetical pathway is rendered. You can also use the button located below the data table to download all
+    current favourites as a .csv file.
+    """)
+    st.warning(
+        """**WARNING:** All your session data, including your list of favourite molecules, is always lost\
+     when you close the browser tab or exit the session otherwise!""",
+        icon="⚠️",
+    )

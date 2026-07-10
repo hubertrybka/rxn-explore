@@ -1,6 +1,8 @@
 import streamlit as st
+
 from src.data import MoleculeDataset
-from src.utils import list_library, retrieve_timestamp
+from src.utils import list_library
+
 
 @st.cache_resource(show_spinner=False)
 def _load_dataset(path_or_file, data_dir, from_pkl: bool) -> MoleculeDataset:
@@ -8,106 +10,131 @@ def _load_dataset(path_or_file, data_dir, from_pkl: bool) -> MoleculeDataset:
     dataset.load(path_or_file, from_pkl=from_pkl)
     return dataset
 
+
 def set_session_state(dataset, filename):
-    if filename.endswith('.csv'):
-        name = filename.replace('.csv', '')
-    else:
-        name = filename
-    st.session_state['dataset'] = dataset
-    st.session_state['dataset_name'] = name
-    st.session_state['is_bugged'] = [False] * dataset.n_molecules
+    name = filename.replace(".csv", "") if filename.endswith(".csv") else filename
+    st.session_state["dataset"] = dataset
+    st.session_state["dataset_name"] = name
     st.success("Data loaded successfully")
     st.rerun()
 
-st.header("Load Data")
-
-with st.expander("**How to use rxn-explore**", icon="📋"):
-    st.markdown("""
-    This app serves as an interface between a chemist and the output files of the GenProSyn GFlowNet.
-    It allows you to browse the generated molecules, visualize their structures and preview synthesis pathways.
-    
-    ### How to use:
-    
-    1. **Upload a .csv file** containing the SMILES of the molecules you want to visualize. The file
-    should contain at least two columns: "molecule" and "path".  
-    You can save an uploaded file to the library (disk) to access it easily in future sessions.
-    
-    2. **Navigate to "Browse Molecules" page** (from sidebar) to visualize the molecules present in the dataset.
-    Each molecule is displayed with its synthetical pathway.  
-    You can select promising molecules as "favourite" to access them later.
-    
-    3. **Navigate to "Favourites" page** (from sidebar) to view the molecules you have marked as favourite.
-    Click the eye icon next to a molecule to move it to the "Browse Molecules" page.
-    """)
-    st.warning("Remember that all session state is cleared when you close the app!")
-
-st.space(size="small")
 
 def upload_file():
-    st.subheader("⬆️ Upload file ⬆️")
-    st.write("Upload a .csv file from your machine")
-    uploaded_file = st.file_uploader('',
-                                     accept_multiple_files=False)
-    if st.button("Upload file"):
-        if uploaded_file is None:
-            st.error("Please select a file to upload")
-            return
-        else:
-            with st.spinner("Loading...", show_time=False):
-                dataset = _load_dataset(uploaded_file, st.session_state['data_dir'], from_pkl=False)
-                set_session_state(dataset, uploaded_file.name)
+    st.subheader("⬆️ Upload file")
+    st.caption("Upload a .csv file from your machine")
+    uploaded_file = st.file_uploader(
+        "",
+        accept_multiple_files=False,
+        type=".csv",
+        label_visibility="collapsed",
+        max_upload_size=100,
+    )
+    _, col, _ = st.columns([1, 2, 1])
+    with col:
+        if st.button("Upload data", use_container_width=True):
+            if uploaded_file is None:
+                return False
+            else:
+                with st.spinner("Loading...", show_time=False):
+                    dataset = _load_dataset(
+                        uploaded_file, st.session_state["data_dir"], from_pkl=False
+                    )
+                    set_session_state(dataset, uploaded_file.name)
+                    return True
+
 
 def load_file():
-    st.subheader("💾 Load from library 💾")
-    st.write("Load a dataset which has been previously saved to the library")
-    datasets = list_library(st.session_state['data_dir'], suffix=False)
-    datasets.sort(key=retrieve_timestamp, reverse=True)
-    name = st.selectbox("Select dataset", datasets, index=None)
-    dataset_path = st.session_state['data_dir'] / f"{name}.pkl"
-    if st.button("Load data"):
-        if name is None:
-            st.error("Please select a dataset from the dropdown list")
-            return
-        else:
-            with st.spinner("Loading...", show_time=False):
-                dataset = _load_dataset(dataset_path, st.session_state['data_dir'], from_pkl=True)
-                set_session_state(dataset, name)
+    st.subheader("💾 Load from library")
+    st.caption("Load a dataset which has been previously saved to the library")
+    st.space(size="small")
+    datasets = list_library(st.session_state["data_dir"], suffix=False)
+    name = st.selectbox("", datasets, index=None, label_visibility="collapsed")
+    dataset_path = st.session_state["data_dir"] / f"{name}.pkl"
+    _, col, _ = st.columns([1, 2, 1])
+    with col:
+        if st.button("Load data", use_container_width=True):
+            if name is None:
+                return False
+            else:
+                with st.spinner("Loading...", show_time=False):
+                    dataset = _load_dataset(
+                        dataset_path, st.session_state["data_dir"], from_pkl=True
+                    )
+                    set_session_state(dataset, name)
+                    return True
+
 
 def save_dataset():
-    st.subheader("📚 Save to library 📚")
-    st.write("Store data on the server to access it quickly in future sessions")
-    filename = st.text_input("Save as:", value=st.session_state['dataset_name'] if st.session_state['dataset_name'] else "")
+    st.subheader("📚 Save to library")
+    st.caption("Store data on the server to access it quickly in future sessions")
+    filename = st.text_input(
+        "Save as:",
+        value=(
+            st.session_state["dataset_name"] if st.session_state["dataset_name"] else ""
+        ),
+    )
     if st.button("Add to library"):
-        if st.session_state['dataset'] is None:
+        data_dir = st.session_state["data_dir"]
+        if st.session_state["dataset"] is None:
             # if no data is loaded, do nothing
-            st.error("No data to save - upload a dataset first")
+            st.error("No data to save - upload a dataset first", icon="❌")
             return
         if not filename:
             # if no filename is provided, do nothing
-            st.error("Please enter a name for the dataset")
+            st.error("Please enter a name for the dataset", icon="❌")
+            return
+        if len(list_library(data_dir)) >= 100:
+            st.error(
+                f"**ERROR: Maximum allowed number of datasets stored in library ({st.session_state["lib_max_entries"]}) "
+                f"has been reached**. Remove old files from server storage before adding new ones. The "
+                f"files saved to library are stored in `{data_dir}`.",
+                icon="❌",
+            )
             return
         try:
-            st.session_state['dataset'].save(filename)
+            st.session_state["dataset"].save(filename)
             list_library.clear()
             st.success(f"{filename} added to library")
-            st.rerun()
         except Exception as e:
-            st.error(e)
+            st.error(e, icon="❌")
+
+
+# ========================================================================#
+
+st.header("Load Data", text_alignment="center")
+st.markdown(
+    "Upload new .csv data file or load existing one from server storage",
+    text_alignment="center",
+)
+
+st.divider()
 
 # Uploading
 
-col1, col2 = st.columns([1, 1])
+col1, col_2, col3 = st.columns([5.5, 1, 6])
 
 with col1:
-    c_upload = st.container(border=True, height=300)
+    c_upload = st.container(border=True, height=360)
     with c_upload:
-        upload_file()
+        if upload_file() is False:
+            st.error("Please select a file to upload", icon="❌")
+
+with col_2:
+    c_or = st.container(
+        border=False,
+        vertical_alignment="center",
+        horizontal_alignment="center",
+        height=360,
+    )
+    with c_or:
+        st.markdown("## OR", text_alignment="center")
 
 # Reading from disk
-with col2:
-    c_read = st.container(border=True, height=300)
+with col3:
+    c_read = st.container(border=True, height=360)
     with c_read:
-        load_file()
+        if load_file() is False:
+            st.error("Please select a dataset from the dropdown list", icon="❌")
 
 # Allow the user to save uploaded data to disk
 st.space(size="small")

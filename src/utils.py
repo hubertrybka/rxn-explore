@@ -1,20 +1,21 @@
 import pathlib
-import streamlit as st
-import rdkit.Chem as Chem
-from rdkit.Chem import Descriptors
-import rdkit.Chem.QED as QED
+
+import datetime
 import pandas as pd
+import rdkit.Chem as Chem
+import rdkit.Chem.QED as QED
+import streamlit as st
+from rdkit.Chem import Descriptors
+
 
 @st.cache_data(show_spinner=False)
 def list_library(data_dir: pathlib.Path, suffix=True) -> list[str]:
-    contents = [f.name for f in data_dir.glob('*.pkl')]
+    contents = [f.name for f in data_dir.glob("*.pkl")]
     if not suffix:
-        contents = [f.replace('.pkl', '') for f in contents]
-    contents.sort(key=lambda x: x.split('_')[-1], reverse=True)
+        contents = [f.replace(".pkl", "") for f in contents]
+    contents.sort(key=lambda x: x.split("_")[-1], reverse=True)
     return contents
 
-def retrieve_timestamp(filename):
-    return filename.split('_')[-1].replace('.pkl', '')
 
 @st.cache_data(show_spinner=False)
 def calculate_descriptors(smiles: str) -> pd.DataFrame:
@@ -24,14 +25,16 @@ def calculate_descriptors(smiles: str) -> pd.DataFrame:
     """
     mol = Chem.MolFromSmiles(smiles)
     descriptor_funcs = {
-        'Mol Wt': Descriptors.MolWt,
-        'H-bond Donors': Descriptors.NumHDonors,
-        'H-bond Acceptors': Descriptors.NumHAcceptors,
-        'TPSA': Descriptors.TPSA,
-        'cLogP': Descriptors.MolLogP,
-        'QED': QED.qed
+        "Mol Wt": Descriptors.MolWt,
+        "H-bond Donors": Descriptors.NumHDonors,
+        "H-bond Acceptors": Descriptors.NumHAcceptors,
+        "TPSA": Descriptors.TPSA,
+        "cLogP": Descriptors.MolLogP,
+        "QED": QED.qed,
     }
-    values = []
-    for name, func in descriptor_funcs.items():
-        values.append(func(mol))
-    return pd.DataFrame({'Property': list(descriptor_funcs.keys()), 'Value': values})
+    values = [func(mol) for func in descriptor_funcs.values()]
+    return pd.DataFrame({"Property": list(descriptor_funcs.keys()), "Value": values})
+
+
+def get_timestamp():
+    return datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
