@@ -1,0 +1,72 @@
+[server]
+enableStaticServing = true
+
+[logger]
+level = "error"
+
+[[theme.fontFaces]]
+family = "RoundsNeue"
+url = "app/static/RoundsNeue_Regular.ttf"
+style = "normal"
+weight = 400
+
+[[theme.fontFaces]]
+family = "RoundsNeue"
+url = "app/static/RoundsNeue_Bold.ttf"
+style = "normal"
+weight = 700
+
+[[theme.fontFaces]]
+family = "RoundsNeue"
+url = "app/static/RoundsNeue_BoldItalic.ttf"
+style = "italic"
+weight = 700
+
+[[theme.fontFaces]]
+family = "RoundsNeue"
+url = "app/static/RoundsNeue_Italic.ttf"
+style = "italic"
+weight = 400
+
+[[theme.fontFaces]]
+family = "Lato"
+url = "app/static/Lato-Regular.ttf"
+style = "normal"
+weight = 400
+
+[[theme.fontFaces]]
+family = "Lato"
+url = "app/static/Lato-Bold.ttf"
+style = "normal"
+weight = 700
+
+[[theme.fontFaces]]
+family = "Lato"
+url = "app/static/Lato-BoldItalic.ttf"
+style = "italic"
+weight = 700
+
+[[theme.fontFaces]]
+family = "Lato"
+url = "app/static/Lato-Italic.ttf"
+style = "italic"
+weight = 400
+
+[theme]
+base='light'
+primaryColor = "#9E31B0"
+secondaryBackgroundColor = "#F1F7F0"
+textColor = "#3d3a2a"
+linkColor = "#3d3a2a"
+borderColor = "#d3d2ca"
+showWidgetBorder = true
+baseRadius = "0.6rem"
+font = "Lato"
+headingFont = "RoundsNeue"
+codeBackgroundColor = "#ecebe4"
+showSidebarBorder = true
+
+[theme.sidebar]
+headingFontSizes = ["2rem", "1.6rem", "1.4rem"]
+backgroundColor = "#F6F0F7"
+secondaryBackgroundColor = "#ecebe3"

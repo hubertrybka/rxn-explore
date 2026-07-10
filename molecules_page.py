@@ -20,8 +20,7 @@ def molecule_selection(dataset):
 
 
 def handle_pathway_rendering_error(dataset, index, error):
-    st.write("**Pathway could not be rendered.** Let me know by sending a report:")
-
+    st.write("**Pathway could not be rendered.** I will look into this - send me a report:")
     if st.button(
         "Report", type="primary", disabled=index in st.session_state["bugged_idcs"]
     ):
@@ -41,22 +40,11 @@ def handle_pathway_rendering_error(dataset, index, error):
 
 
 def handle_add_to_favourites(index):
-    _, col, _ = st.columns([1, 2, 1])
+    _, col, _ = st.columns([1, 3, 1])
     with col:
-        fav = st.button(
-            (
-                "**Add** to favourites"
-                if index not in st.session_state["favourite_idcs"]
-                else "**Remove** from favourites"
-            ),
-            type=(
-                "primary"
-                if index in st.session_state["favourite_idcs"]
-                else "secondary"
-            ),
-            icon="⭐",
-            use_container_width=True,
-        )
+        fav_button_label = "**Add to favourites**" if index not in st.session_state["favourite_idcs"] else "**Remove from favourites**"
+        fav_button_type = "primary" if index in st.session_state["favourite_idcs"] else "secondary"
+        fav = st.button(label=fav_button_label, type=fav_button_type, icon="⭐",  use_container_width=True)
         if fav:
             if index not in st.session_state["favourite_idcs"]:
                 st.session_state["favourite_idcs"].append(index)
@@ -78,7 +66,7 @@ if st.session_state["dataset"] is not None:
     dataset = st.session_state["dataset"]
 
     # Display the molecule
-    left_col, right_col = st.columns([1, 1])
+    left_col, right_col = st.columns([1.2, 1], vertical_alignment="center")
     with left_col:
         index = molecule_selection(dataset)
         molecule = dataset[index]
@@ -98,7 +86,7 @@ if st.session_state["dataset"] is not None:
     # Render the reaction scheme
     total_steps = len(molecule.pathway)
     for i, step in enumerate(molecule.pathway):
-        cont_step = st.container(border=True, horizontal_alignment="center")
+        cont_step = st.container(border=True, horizontal_alignment="left")
         with cont_step:
             try:
                 st.write(f"**Step {i+1}** of {total_steps}:")
@@ -106,8 +94,6 @@ if st.session_state["dataset"] is not None:
             except Exception as e:
                 # Handle errors -> send report
                 st.error(f"Error rendering pathway: {e}")
-                cont_er = st.container(border=True)
-                with cont_er:
-                    handle_pathway_rendering_error(dataset, index, e)
+                handle_pathway_rendering_error(dataset, index, e)
 else:
     st.warning("Load a dataset to see this page", icon="⚠️")

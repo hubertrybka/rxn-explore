@@ -2,7 +2,7 @@ import streamlit as st
 
 
 def render_user_guide():
-    with st.expander("How to use **rxn-explore** server?", expanded=False, icon="❓"):
+    with st.expander("How to use **rxn-explore** server", expanded=False):
         st.markdown(
             """
         This app allows you to easily browse and analyze the **molecules** and **synthetic pathways** produced by the
@@ -12,7 +12,7 @@ def render_user_guide():
         ---
         ### Layout:
     
-        The core app functionalities are divided between three important pages:
+        The core app functionalities are divided between three pages:
             
         - 💾 _Load Data_ (current page) - to **upload data** file to server
         - 👁 _Browse Molecules_ - to **visualize molecules** and synthetic pathways
@@ -28,13 +28,13 @@ def render_user_guide():
         upload widget. Select the `.csv` file from your local storage and send it to the server by 
         clicking the _Upload data_ button.
         
-            **If the dataset is loaded correctly, two things will change in Session Status window:**
+            **If the dataset is loaded correctly, two things will change in Data Status window:**
             - The message box background will change color from **blue** -> **green**.
-            - The **Dataset loaded** message will appear in the box, followed by the name of the uploaded file."""
+            - _Dataset loaded_ message will appear in the box, followed by the name of the uploaded file."""
         )
 
         st.info(
-            "**Session Status** is a message displayed on the left sidebar, just the below navigation menu. "
+            "**Data Status** is a message displayed on the left sidebar, below the navigation menu. "
             "It signals whether a dataset has been successfully loaded to the server or not.",
             icon="ℹ️",
         )
@@ -58,18 +58,53 @@ def render_user_guide():
         current favourites as a .csv file.
         """)
         st.warning(
-            """**WARNING:** All your session data, including your list of favourite molecules, is always lost\
-            when you close the browser tab or exit the session otherwise!""",
+            """**WARNING:** All your session data, including the list of molecules marked as _favourite_, is **permanently 
+            lost** when you close the browser tab or **exit the session** otherwise!""",
             icon="⚠️",
         )
         st.info(
-            "The only data which is retained on server between sessions and can be accessed directly after login "
+            "The only data which is **retained** on server between sessions and can be accessed directly after login "
             "are the **datasets** which have been added to **library** 📚.",
             icon="ℹ️",
         )
 
         st.caption(
-            "Keep in mind that this app is still under development. "
+            "This app is still under development. "
             "You are welcome to report bugs and request new features.",
             text_alignment="center",
         )
+
+@st.dialog("Uploaded file could not be parsed!", icon="❌", dismissible=True, width='medium')
+def file_upload_error(e):
+    st.markdown("Make sure the file format is correct. Verify the presence of columns: `molecule`, `path`, "
+                "and inspect the data contained within.")
+    st.error(f"**ERROR**: {e}")
+
+@st.dialog("Library data retrieval failed!!", icon="❌", dismissible=True, width='medium')
+def load_from_library_error(e):
+    st.markdown("The dataset you selected could not be retrieved from library. The chosen file may either "
+                "not represent a valid dataset, or it might have been corrupted.")
+    st.error(f"**ERROR**: {e}")
+
+@st.dialog("Library is full!", icon="❌", dismissible=True, width='medium')
+def library_full_error():
+    st.error(
+        f"**ERROR:** Maximum allowed number of datasets stored in library ({st.session_state["lib_max_entries"]}) "
+        f"has been reached.", icon='❌')
+    st.markdown("Remove old files from server storage before adding new ones. The "
+        f"files saved to library are stored in `{st.session_state['data_dir']}`.")
+
+def render_navigation_menu():
+    st.header("Navigation menu", text_alignment="left")
+    st.page_link(page="data_page.py", label="1. Load Data", icon='💾', icon_position="right")
+    st.page_link(page="molecules_page.py", label="2. Browse Molecules", icon='👁', icon_position="right")
+    st.page_link(page="favourites_page.py", label="3. Favourites", icon='⭐', icon_position="right")
+    st.page_link(page="info_page.py", label="4. Info", icon='ℹ️', icon_position="right")
+
+def add_borders_to_alerts():
+# CSS markdown trick - adds border to alerts
+    st.markdown("""
+    <style>
+        .stAlert {border-style: solid; border-radius: 5px; border-width: 1px; border-color:darkblue;}
+    </style>
+    """, unsafe_allow_html=True)

@@ -39,7 +39,6 @@ def calculate_descriptors(smiles: str) -> pd.DataFrame:
 def get_timestamp():
     return datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
 
-
 def sort_library(files: list[pathlib.Path]) -> list[pathlib.Path]:
     strategy = st.session_state.get("lib_sort_by", "date (newest)")
     if strategy == "name (A→Z)":
