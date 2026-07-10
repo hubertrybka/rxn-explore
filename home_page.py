@@ -19,21 +19,21 @@ with st.expander("How to use **rxn-explore** server?", expanded=True, icon="❓"
     1. The app functionalities are divided into separate pages, accessed through a navigation menu, 
     which is located on the top of the sidebar (left). There are five pages in total:
     
-        - *Home* 
+        - *User Guide* 
         - *Load Data*
         - *Browse Molecules*
         - *Favourites*
         - *Info* 
     
-    Our first task is to upload the desired `.csv` file to server. **Navigate to *Load Data* page.** 
-    Select a `.csv` file from your local storage and upload it to the server by clicking the _Upload data_ button."""
+    Our first task is to upload the desired `.csv` file to server. **Navigate to *Load Data* page** and identify
+    the widget which allows you to upload a new data file. Select a `.csv` file from your local storage and send 
+    it to the server by clicking the _Upload data_ button."""
     )
 
     st.info(
-        "If the upload is successful, you will notice the **Session status** message change to *Dataset loaded*, "
-        "displaying the name and size of the uploaded data. Session status message box will also change background "
-        "color from blue to green to signal this fact. **Session status box is located on the top of the sidebar, "
-        "just below the navigation menu.**",
+        "Successful file upload will be signaled by the **Session status** message box changing its appearance "
+        "from blue to green, with the _Dataset loaded_ text appearing inside. **Session status box can be found on the "
+        "sidebar, just below navigation menu.**",
         icon="ℹ️",
     )
 
@@ -44,8 +44,8 @@ with st.expander("How to use **rxn-explore** server?", expanded=True, icon="❓"
     The maximum number of datasets stored in library is 100.""")
 
     st.info(
-        "The only type of data which is retained on server between sessions and can be accessed in future sessions "
-        "is the **datasets** which has been added add to **library** 📚.",
+        "The only data which is retained on server between sessions and can be accessed directly after login "
+        "are the **datasets** which have been added to **library** 📚.",
         icon="ℹ️",
     )
 
